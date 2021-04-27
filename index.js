@@ -51,7 +51,7 @@ function dataProcess(body) {
         "citta": body.name,
         "temperatura": (body.main.temp - 273.15).toFixed(2),
         "umidita": body.main.humidity,
-        "vento": body.wind,
+        "vento": body.wind.speed,
         "pressione": body.main.pressure,
     };
     return result;
