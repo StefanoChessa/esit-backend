@@ -26,7 +26,7 @@ La struttura deve essere così definita:
 const city = 'Cagliari';
 app.get('/meteo', (req, res) => {
     rp('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + appid, {json: true}).then(body => {
-        res.send(dataProcess(body));
+        res.send(processData(body));
     }).catch(err => {
         res.send(err);
     });
@@ -37,8 +37,8 @@ in una località predefinita passata parametro della chiamata. Es: http://localh
 app.get('/meteo/:citta', (req, res) => {
     rp('https://api.openweathermap.org/data/2.5/weather?q=' + req.params.citta + '&appid=' + appid,
         { json: true }).then(body => {
-            console.log(dataProcess(body));
-        res.send(dataProcess(body));
+            console.log(processData(body));
+        res.send(processData(body));
     }).catch(err => {
         res.send(err);
     });
@@ -46,13 +46,13 @@ app.get('/meteo/:citta', (req, res) => {
 
 
 /*METODI DI SUPPORTO*/
-function dataProcess(body) {
+function processData(body) {
     let result = {
-        "citta": body.name,
-        "temperatura": (body.main.temp - 273.15).toFixed(2),
-        "umidita": body.main.humidity,
-        "vento": body.wind.speed,
-        "pressione": body.main.pressure,
+        "location": body.name,
+        "temp": parseFloat((body.main.temp - 273.15).toFixed(1)),
+        "umidity": body.main.humidity,
+        "wind": body.wind.speed,
+        "pressure": body.main.pressure,
     };
     return result;
 }
