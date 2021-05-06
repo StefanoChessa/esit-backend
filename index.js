@@ -49,19 +49,19 @@ in una località predefinita passata parametro della chiamata. Es: http://localh
 app.get('/meteo/:location', (req, res) => {
     rp('https://api.openweathermap.org/data/2.5/weather?q=' + req.params.location + '&appid=' + appid,
         {json: true}).then(body => {
-        console.log(processData(body));
-        res.send(processData(body));
+        //console.log(processData(body));
+        res.send(extendData(body));
     }).catch(err => {
         res.send(err);
     });
 });
-
+/*Implementazione di una cache su mongodb*/
 app.get('/mongo/:location', async (req, res) => {
 
     const location = req.params.location;
-    const update_time = 900000;
-    const currentTime = Date.now();
-    const weather = await weatherSchema.findOne({location: req.params.location});
+    const update_time = 900000; //15 minuti in ms
+    const currentTime = Date.now(); //timestamp
+    const weather = await weatherSchema.findOne({location});
 
     if (weather == null) {
         let doc = new weatherSchema;
@@ -132,3 +132,16 @@ function processData(body) {
     return result;
 }
 
+function extendData(body){
+    const iconURL = "http://openweathermap.org/img/wn/";
+    let result = {
+        "location": body.name,
+        "temp": parseFloat((body.main.temp - 273.15).toFixed(1)),
+        "humidity": body.main.humidity,
+        "wind": body.wind.speed,
+        "pressure": body.main.pressure,
+        "description": body.weather[0].description,
+        "icon": iconURL + body.weather[0].icon + ".png"
+    };
+    return result;
+}
